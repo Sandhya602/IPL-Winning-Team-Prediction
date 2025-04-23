@@ -1,1 +1,33 @@
+# model_training.py
+
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+import joblib
+
+# Step 1: Load dataset
+df = pd.read_csv('IPL_Matches_Updated.csv')  # Use your cleaned IPL match dataset
+
+# Step 2: Preprocess dataset (Example: converting categorical to numerical)
+df = df[['team1', 'team2', 'toss_winner', 'toss_decision', 'venue', 'winner']]
+df.dropna(inplace=True)
+
+# Encoding categorical columns
+df = pd.get_dummies(df, columns=['team1', 'team2', 'toss_winner', 'toss_decision', 'venue'])
+
+# Step 3: Set features and label
+X = df.drop('winner', axis=1)
+y = df['winner']
+
+# Encode label
+y = pd.factorize(y)[0]
+
+# Step 4: Split and train model
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+
+# Step 5: Save the model
+joblib.dump(model, 'model.pkl')
+print("✅ Model trained and saved as model.pkl")
 
